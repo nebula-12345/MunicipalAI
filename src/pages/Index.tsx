@@ -1,11 +1,103 @@
-// Update this page (the content is just a fallback if you fail to update the page)
+import { useState, useMemo } from 'react';
+import { Email, ActionType, Department, EmailStatus } from '@/types/email';
+import { mockEmails } from '@/data/mockEmails';
+import { EmailList } from '@/components/EmailList';
+import { EmailDetail } from '@/components/EmailDetail';
+import { ResponseModal } from '@/components/ResponseModal';
 
 const Index = () => {
+  const [emails, setEmails] = useState<Email[]>(mockEmails);
+  const [selectedEmail, setSelectedEmail] = useState<Email | null>(null);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [currentAction, setCurrentAction] = useState<ActionType>('custom');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [departmentFilter, setDepartmentFilter] = useState<Department | 'all'>('all');
+  const [statusFilter, setStatusFilter] = useState<EmailStatus | 'all'>('all');
+
+  const filteredEmails = useMemo(() => {
+    return emails.filter((email) => {
+      const matchesSearch = 
+        email.subject.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        email.sender.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        email.body.toLowerCase().includes(searchQuery.toLowerCase());
+
+      const matchesDepartment = 
+        departmentFilter === 'all' || email.department === departmentFilter;
+
+      const matchesStatus = 
+        statusFilter === 'all' || email.status === statusFilter;
+
+      return matchesSearch && matchesDepartment && matchesStatus;
+    });
+  }, [emails, searchQuery, departmentFilter, statusFilter]);
+
+  const handleSelectEmail = (email: Email) => {
+    setSelectedEmail(email);
+    if (!email.isRead) {
+      setEmails((prev) =>
+        prev.map((e) => (e.id === email.id ? { ...e, isRead: true } : e))
+      );
+    }
+  };
+
+  const handleAction = (actionType: ActionType) => {
+    setCurrentAction(actionType);
+    setModalOpen(true);
+  };
+
+  const handleSendResponse = (response: string) => {
+    if (selectedEmail) {
+      setEmails((prev) =>
+        prev.map((e) =>
+          e.id === selectedEmail.id
+            ? { ...e, status: 'responded' as EmailStatus }
+            : e
+        )
+      );
+      setSelectedEmail({ ...selectedEmail, status: 'responded' });
+    }
+  };
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background">
-      <div className="text-center">
-        <h1 className="mb-4 text-4xl font-bold">Welcome to Your Blank App</h1>
-        <p className="text-xl text-muted-foreground">Start building your amazing project here!</p>
+    <div className="flex h-screen w-full bg-background">
+      <div className="w-[30%] min-w-[320px]">
+        <EmailList
+          emails={filteredEmails}
+          selectedEmailId={selectedEmail?.id || null}
+          onSelectEmail={handleSelectEmail}
+          searchQuery={searchQuery}
+          onSearchChange={setSearchQuery}
+          departmentFilter={departmentFilter}
+          onDepartmentFilterChange={setDepartmentFilter}
+          statusFilter={statusFilter}
+          onStatusFilterChange={setStatusFilter}
+        />
+      </div>
+
+      <div className="flex-1">
+        {selectedEmail ? (
+          <>
+            <EmailDetail email={selectedEmail} onAction={handleAction} />
+            <ResponseModal
+              open={modalOpen}
+              onClose={() => setModalOpen(false)}
+              email={selectedEmail}
+              actionType={currentAction}
+              onSend={handleSendResponse}
+            />
+          </>
+        ) : (
+          <div className="flex h-full items-center justify-center">
+            <div className="text-center">
+              <h2 className="text-2xl font-semibold text-muted-foreground mb-2">
+                Select an email to view
+              </h2>
+              <p className="text-sm text-muted-foreground">
+                Choose an email from the list to see its details and respond
+              </p>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

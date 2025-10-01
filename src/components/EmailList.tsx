@@ -1,0 +1,145 @@
+import { Email, Department, EmailStatus } from '@/types/email';
+import { Badge } from '@/components/ui/badge';
+import { cn } from '@/lib/utils';
+import { Search, Filter } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+
+interface EmailListProps {
+  emails: Email[];
+  selectedEmailId: string | null;
+  onSelectEmail: (email: Email) => void;
+  searchQuery: string;
+  onSearchChange: (query: string) => void;
+  departmentFilter: Department | 'all';
+  onDepartmentFilterChange: (department: Department | 'all') => void;
+  statusFilter: EmailStatus | 'all';
+  onStatusFilterChange: (status: EmailStatus | 'all') => void;
+}
+
+const departmentColors: Record<Department, string> = {
+  'administration': 'bg-blue-500/10 text-blue-700 dark:text-blue-300',
+  'finance': 'bg-green-500/10 text-green-700 dark:text-green-300',
+  'public-works': 'bg-orange-500/10 text-orange-700 dark:text-orange-300',
+  'planning': 'bg-purple-500/10 text-purple-700 dark:text-purple-300',
+  'human-resources': 'bg-pink-500/10 text-pink-700 dark:text-pink-300',
+};
+
+const statusColors: Record<EmailStatus, string> = {
+  'pending': 'bg-yellow-500/10 text-yellow-700 dark:text-yellow-300',
+  'responded': 'bg-green-500/10 text-green-700 dark:text-green-300',
+  'forwarded': 'bg-blue-500/10 text-blue-700 dark:text-blue-300',
+  'closed': 'bg-gray-500/10 text-gray-700 dark:text-gray-300',
+};
+
+export const EmailList = ({
+  emails,
+  selectedEmailId,
+  onSelectEmail,
+  searchQuery,
+  onSearchChange,
+  departmentFilter,
+  onDepartmentFilterChange,
+  statusFilter,
+  onStatusFilterChange,
+}: EmailListProps) => {
+  return (
+    <div className="flex h-full flex-col border-r bg-card">
+      <div className="border-b p-4 space-y-3">
+        <h2 className="text-lg font-semibold text-foreground">Inbox</h2>
+        
+        <div className="relative">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Input
+            type="text"
+            placeholder="Search emails..."
+            value={searchQuery}
+            onChange={(e) => onSearchChange(e.target.value)}
+            className="pl-9"
+          />
+        </div>
+
+        <div className="flex gap-2">
+          <Select value={departmentFilter} onValueChange={onDepartmentFilterChange}>
+            <SelectTrigger className="flex-1">
+              <Filter className="h-4 w-4 mr-2" />
+              <SelectValue placeholder="Department" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Departments</SelectItem>
+              <SelectItem value="administration">Administration</SelectItem>
+              <SelectItem value="finance">Finance</SelectItem>
+              <SelectItem value="public-works">Public Works</SelectItem>
+              <SelectItem value="planning">Planning</SelectItem>
+              <SelectItem value="human-resources">Human Resources</SelectItem>
+            </SelectContent>
+          </Select>
+
+          <Select value={statusFilter} onValueChange={onStatusFilterChange}>
+            <SelectTrigger className="flex-1">
+              <SelectValue placeholder="Status" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Status</SelectItem>
+              <SelectItem value="pending">Pending</SelectItem>
+              <SelectItem value="responded">Responded</SelectItem>
+              <SelectItem value="forwarded">Forwarded</SelectItem>
+              <SelectItem value="closed">Closed</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+      </div>
+
+      <div className="flex-1 overflow-y-auto">
+        {emails.map((email) => (
+          <div
+            key={email.id}
+            onClick={() => onSelectEmail(email)}
+            className={cn(
+              'border-b p-4 cursor-pointer transition-colors hover:bg-accent',
+              selectedEmailId === email.id && 'bg-accent',
+              !email.isRead && 'bg-muted/50'
+            )}
+          >
+            <div className="flex items-start justify-between gap-2 mb-2">
+              <span className={cn(
+                'font-medium text-sm',
+                !email.isRead ? 'text-foreground' : 'text-muted-foreground'
+              )}>
+                {email.sender}
+              </span>
+              <span className="text-xs text-muted-foreground whitespace-nowrap">
+                {email.timestamp.toLocaleDateString()}
+              </span>
+            </div>
+
+            <h3 className={cn(
+              'text-sm mb-2 line-clamp-1',
+              !email.isRead ? 'font-semibold text-foreground' : 'text-muted-foreground'
+            )}>
+              {email.subject}
+            </h3>
+
+            <p className="text-xs text-muted-foreground line-clamp-2 mb-2">
+              {email.body}
+            </p>
+
+            <div className="flex gap-2 flex-wrap">
+              <Badge variant="secondary" className={cn('text-xs', departmentColors[email.department])}>
+                {email.department.replace('-', ' ')}
+              </Badge>
+              <Badge variant="secondary" className={cn('text-xs', statusColors[email.status])}>
+                {email.status}
+              </Badge>
+              {email.hasAttachments && (
+                <Badge variant="outline" className="text-xs">
+                  📎 Attachments
+                </Badge>
+              )}
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
