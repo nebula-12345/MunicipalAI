@@ -1,11 +1,16 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Email, ActionType, Department, EmailStatus } from '@/types/email';
 import { mockEmails } from '@/data/mockEmails';
 import { EmailList } from '@/components/EmailList';
 import { EmailDetail } from '@/components/EmailDetail';
 import { ResponseModal } from '@/components/ResponseModal';
+import { Header } from '@/components/Header';
+import { useAuth } from '@/contexts/AuthContext';
 
 const Index = () => {
+  const { user, isAuthenticated } = useAuth();
+  const navigate = useNavigate();
   const [emails, setEmails] = useState<Email[]>(mockEmails);
   const [selectedEmail, setSelectedEmail] = useState<Email | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
@@ -14,8 +19,19 @@ const Index = () => {
   const [departmentFilter, setDepartmentFilter] = useState<Department | 'all'>('all');
   const [statusFilter, setStatusFilter] = useState<EmailStatus | 'all'>('all');
 
+  useEffect(() => {
+    if (!isAuthenticated) {
+      navigate('/auth');
+    }
+  }, [isAuthenticated, navigate]);
+
   const filteredEmails = useMemo(() => {
     return emails.filter((email) => {
+      // Filter by user's department first
+      if (!user || email.department !== user.department) {
+        return false;
+      }
+
       const matchesSearch = 
         email.subject.toLowerCase().includes(searchQuery.toLowerCase()) ||
         email.sender.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -29,7 +45,7 @@ const Index = () => {
 
       return matchesSearch && matchesDepartment && matchesStatus;
     });
-  }, [emails, searchQuery, departmentFilter, statusFilter]);
+  }, [emails, searchQuery, departmentFilter, statusFilter, user]);
 
   const handleSelectEmail = (email: Email) => {
     setSelectedEmail(email);
@@ -58,9 +74,13 @@ const Index = () => {
     }
   };
 
+  if (!user) return null;
+
   return (
-    <div className="flex h-screen w-full bg-background">
-      <div className="w-[30%] min-w-[320px]">
+    <div className="flex h-screen w-full flex-col bg-background">
+      <Header />
+      <div className="flex flex-1 overflow-hidden">
+        <div className="w-[30%] min-w-[320px]">
         <EmailList
           emails={filteredEmails}
           selectedEmailId={selectedEmail?.id || null}
@@ -98,6 +118,7 @@ const Index = () => {
             </div>
           </div>
         )}
+      </div>
       </div>
     </div>
   );
