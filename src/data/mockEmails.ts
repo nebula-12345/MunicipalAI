@@ -13,6 +13,24 @@ export const mockEmails: Email[] = [
     status: 'pending',
     isRead: false,
     hasAttachments: true,
+    attachments: [
+      {
+        id: 'att1',
+        name: 'permit-extension-form.pdf',
+        size: 1024000,
+        type: 'application/pdf',
+        url: '#'
+      },
+      {
+        id: 'att2',
+        name: 'weather-report.pdf',
+        size: 512000,
+        type: 'application/pdf',
+        url: '#'
+      }
+    ],
+    priority: 'high',
+    dueDate: new Date('2025-01-20T17:00:00'),
   },
   {
     id: '2',
@@ -26,6 +44,8 @@ export const mockEmails: Email[] = [
     status: 'pending',
     isRead: true,
     hasAttachments: false,
+    priority: 'urgent',
+    dueDate: new Date('2025-01-16T17:00:00'),
   },
   {
     id: '3',
@@ -39,6 +59,7 @@ export const mockEmails: Email[] = [
     status: 'responded',
     isRead: true,
     hasAttachments: false,
+    priority: 'high',
   },
   {
     id: '4',
@@ -52,6 +73,8 @@ export const mockEmails: Email[] = [
     status: 'pending',
     isRead: false,
     hasAttachments: false,
+    priority: 'normal',
+    dueDate: new Date('2025-01-22T17:00:00'),
   },
   {
     id: '5',
@@ -65,5 +88,23 @@ export const mockEmails: Email[] = [
     status: 'pending',
     isRead: true,
     hasAttachments: true,
+    attachments: [
+      {
+        id: 'att3',
+        name: 'park-renovation-plans.pdf',
+        size: 3145728,
+        type: 'application/pdf',
+        url: '#'
+      },
+      {
+        id: 'att4',
+        name: 'cost-estimates.xlsx',
+        size: 245760,
+        type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        url: '#'
+      }
+    ],
+    priority: 'low',
+    dueDate: new Date('2025-02-15T17:00:00'),
   },
 ];

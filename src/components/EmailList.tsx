@@ -1,7 +1,7 @@
-import { Email, Department, EmailStatus } from '@/types/email';
+import { Email, Department, EmailStatus, Priority } from '@/types/email';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
-import { Search, Filter } from 'lucide-react';
+import { Search, Filter, AlertCircle, Clock } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
@@ -30,6 +30,26 @@ const statusColors: Record<EmailStatus, string> = {
   'responded': 'bg-green-500/10 text-green-700 dark:text-green-300',
   'forwarded': 'bg-blue-500/10 text-blue-700 dark:text-blue-300',
   'closed': 'bg-gray-500/10 text-gray-700 dark:text-gray-300',
+  'archived': 'bg-purple-500/10 text-purple-700 dark:text-purple-300',
+};
+
+const priorityColors: Record<Priority, string> = {
+  'urgent': 'bg-red-500/10 text-red-700 dark:text-red-300',
+  'high': 'bg-orange-500/10 text-orange-700 dark:text-orange-300',
+  'normal': 'bg-blue-500/10 text-blue-700 dark:text-blue-300',
+  'low': 'bg-gray-500/10 text-gray-700 dark:text-gray-300',
+};
+
+const formatDueDate = (dueDate: Date | undefined): string | null => {
+  if (!dueDate) return null;
+  const now = new Date();
+  const diff = dueDate.getTime() - now.getTime();
+  const days = Math.ceil(diff / (1000 * 60 * 60 * 24));
+  
+  if (days < 0) return 'Overdue';
+  if (days === 0) return 'Due today';
+  if (days === 1) return 'Due tomorrow';
+  return `Due in ${days} days`;
 };
 
 export const EmailList = ({
@@ -85,6 +105,7 @@ export const EmailList = ({
               <SelectItem value="responded">Responded</SelectItem>
               <SelectItem value="forwarded">Forwarded</SelectItem>
               <SelectItem value="closed">Closed</SelectItem>
+              <SelectItem value="archived">Archived</SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -125,15 +146,25 @@ export const EmailList = ({
             </p>
 
             <div className="flex gap-2 flex-wrap">
-              <Badge variant="secondary" className={cn('text-xs', departmentColors[email.department])}>
-                {email.department.replace('-', ' ')}
+              <Badge variant="secondary" className={cn('text-xs', priorityColors[email.priority])}>
+                {email.priority === 'urgent' && <AlertCircle className="h-3 w-3 mr-1" />}
+                {email.priority}
               </Badge>
               <Badge variant="secondary" className={cn('text-xs', statusColors[email.status])}>
                 {email.status}
               </Badge>
+              {email.dueDate && (
+                <Badge variant="outline" className={cn(
+                  'text-xs',
+                  formatDueDate(email.dueDate)?.includes('Overdue') && 'border-red-500 text-red-700 dark:text-red-300'
+                )}>
+                  <Clock className="h-3 w-3 mr-1" />
+                  {formatDueDate(email.dueDate)}
+                </Badge>
+              )}
               {email.hasAttachments && (
                 <Badge variant="outline" className="text-xs">
-                  📎 Attachments
+                  📎 {email.attachments?.length || 0}
                 </Badge>
               )}
             </div>

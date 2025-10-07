@@ -74,6 +74,17 @@ const Index = () => {
     }
   };
 
+  const handleArchive = (emailId: string) => {
+    setEmails((prev) =>
+      prev.map((e) =>
+        e.id === emailId ? { ...e, status: 'archived' as EmailStatus } : e
+      )
+    );
+    if (selectedEmail?.id === emailId) {
+      setSelectedEmail({ ...selectedEmail, status: 'archived' });
+    }
+  };
+
   if (!user) return null;
 
   return (
@@ -97,7 +108,11 @@ const Index = () => {
       <div className="flex-1">
         {selectedEmail ? (
           <>
-            <EmailDetail email={selectedEmail} onAction={handleAction} />
+            <EmailDetail 
+              email={selectedEmail} 
+              onAction={handleAction} 
+              onArchive={handleArchive}
+            />
             <ResponseModal
               open={modalOpen}
               onClose={() => setModalOpen(false)}

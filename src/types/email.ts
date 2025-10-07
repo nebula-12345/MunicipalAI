@@ -1,5 +1,14 @@
-export type EmailStatus = 'pending' | 'responded' | 'forwarded' | 'closed';
+export type EmailStatus = 'pending' | 'responded' | 'forwarded' | 'closed' | 'archived';
 export type Department = 'administration' | 'finance' | 'public-works' | 'planning' | 'human-resources';
+export type Priority = 'urgent' | 'high' | 'normal' | 'low';
+
+export interface Attachment {
+  id: string;
+  name: string;
+  size: number;
+  type: string;
+  url: string;
+}
 
 export interface Email {
   id: string;
@@ -13,6 +22,9 @@ export interface Email {
   status: EmailStatus;
   isRead: boolean;
   hasAttachments: boolean;
+  attachments?: Attachment[];
+  priority: Priority;
+  dueDate?: Date;
 }
 
 export interface User {
