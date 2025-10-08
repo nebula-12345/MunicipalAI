@@ -113,61 +113,64 @@ export const EmailDetail = ({ email, onAction, onArchive }: EmailDetailProps) =>
         )}
       </div>
 
-      <div className="border-t bg-card p-6">
-        <h3 className="text-sm font-semibold mb-4 text-foreground">Quick Actions</h3>
+      <div className="border-t bg-gradient-to-b from-background to-muted/30 p-6">
+        <h3 className="text-sm font-semibold mb-4 text-foreground flex items-center gap-2">
+          <MessageSquare className="h-4 w-4" />
+          Quick Actions
+        </h3>
         <div className="grid grid-cols-2 md:grid-cols-3 gap-3 mb-4">
           <Button
             onClick={() => onAction('accept')}
             variant="outline"
-            className="flex items-center gap-2 h-auto py-3 flex-col"
+            className="flex items-center gap-2 h-auto py-4 flex-col hover:bg-green-50 dark:hover:bg-green-950/20 hover:border-green-300 transition-all"
           >
-            <CheckCircle2 className="h-5 w-5 text-green-600" />
-            <span className="text-xs">Accept</span>
+            <CheckCircle2 className="h-6 w-6 text-green-600" />
+            <span className="text-xs font-medium">Accept</span>
           </Button>
 
           <Button
             onClick={() => onAction('reject')}
             variant="outline"
-            className="flex items-center gap-2 h-auto py-3 flex-col"
+            className="flex items-center gap-2 h-auto py-4 flex-col hover:bg-red-50 dark:hover:bg-red-950/20 hover:border-red-300 transition-all"
           >
-            <XCircle className="h-5 w-5 text-red-600" />
-            <span className="text-xs">Reject</span>
+            <XCircle className="h-6 w-6 text-red-600" />
+            <span className="text-xs font-medium">Reject</span>
           </Button>
 
           <Button
             onClick={() => onAction('request-info')}
             variant="outline"
-            className="flex items-center gap-2 h-auto py-3 flex-col"
+            className="flex items-center gap-2 h-auto py-4 flex-col hover:bg-blue-50 dark:hover:bg-blue-950/20 hover:border-blue-300 transition-all"
           >
-            <HelpCircle className="h-5 w-5 text-blue-600" />
-            <span className="text-xs">Request Info</span>
+            <HelpCircle className="h-6 w-6 text-blue-600" />
+            <span className="text-xs font-medium">Request Info</span>
           </Button>
 
           <Button
             onClick={() => onAction('forward')}
             variant="outline"
-            className="flex items-center gap-2 h-auto py-3 flex-col"
+            className="flex items-center gap-2 h-auto py-4 flex-col hover:bg-purple-50 dark:hover:bg-purple-950/20 hover:border-purple-300 transition-all"
           >
-            <Forward className="h-5 w-5 text-purple-600" />
-            <span className="text-xs">Forward</span>
+            <Forward className="h-6 w-6 text-purple-600" />
+            <span className="text-xs font-medium">Forward</span>
           </Button>
 
           <Button
             onClick={() => onAction('custom')}
             variant="outline"
-            className="flex items-center gap-2 h-auto py-3 flex-col"
+            className="flex items-center gap-2 h-auto py-4 flex-col hover:bg-orange-50 dark:hover:bg-orange-950/20 hover:border-orange-300 transition-all"
           >
-            <MessageSquare className="h-5 w-5 text-orange-600" />
-            <span className="text-xs">Custom Reply</span>
+            <MessageSquare className="h-6 w-6 text-orange-600" />
+            <span className="text-xs font-medium">Custom Reply</span>
           </Button>
 
           <Button
             onClick={() => onAction('acknowledge')}
             variant="outline"
-            className="flex items-center gap-2 h-auto py-3 flex-col"
+            className="flex items-center gap-2 h-auto py-4 flex-col hover:bg-gray-50 dark:hover:bg-gray-950/20 hover:border-gray-300 transition-all"
           >
-            <Mail className="h-5 w-5 text-gray-600" />
-            <span className="text-xs">Acknowledge</span>
+            <Mail className="h-6 w-6 text-gray-600" />
+            <span className="text-xs font-medium">Acknowledge</span>
           </Button>
         </div>
 
@@ -176,7 +179,7 @@ export const EmailDetail = ({ email, onAction, onArchive }: EmailDetailProps) =>
             <Button
               onClick={() => onArchive(email.id)}
               variant="outline"
-              className="w-full"
+              className="w-full hover:bg-purple-50 dark:hover:bg-purple-950/20 hover:border-purple-300 transition-all"
             >
               <Archive className="h-4 w-4 mr-2" />
               Archive Email

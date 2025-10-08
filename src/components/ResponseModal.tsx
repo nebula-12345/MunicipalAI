@@ -5,9 +5,9 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Email, ActionType } from '@/types/email';
-import { generateAIResponse } from '@/utils/aiResponses';
-import { Loader2, Sparkles } from 'lucide-react';
+import { Loader2, Sparkles, Send } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { supabase } from '@/integrations/supabase/client';
 
 interface ResponseModalProps {
   open: boolean;
@@ -33,14 +33,42 @@ export const ResponseModal = ({ open, onClose, email, actionType, onSend }: Resp
   const [body, setBody] = useState('');
   const { toast } = useToast();
 
-  const handleGenerate = () => {
+  const handleGenerate = async () => {
     setIsGenerating(true);
-    // Simulate AI generation delay
-    setTimeout(() => {
-      const generatedResponse = generateAIResponse(email, actionType);
-      setBody(generatedResponse);
+    try {
+      const { data, error } = await supabase.functions.invoke('generate-response', {
+        body: { 
+          email: {
+            sender: email.sender,
+            senderEmail: email.senderEmail,
+            subject: email.subject,
+            body: email.body
+          },
+          actionType 
+        }
+      });
+
+      if (error) {
+        console.error('Error generating response:', error);
+        toast({
+          title: 'Error',
+          description: 'Failed to generate response. Please try again.',
+          variant: 'destructive',
+        });
+        return;
+      }
+
+      setBody(data.response);
+    } catch (error) {
+      console.error('Error generating response:', error);
+      toast({
+        title: 'Error',
+        description: 'Failed to generate response. Please try again.',
+        variant: 'destructive',
+      });
+    } finally {
       setIsGenerating(false);
-    }, 1500);
+    }
   };
 
   const handleOpen = (isOpen: boolean) => {
@@ -68,8 +96,8 @@ export const ResponseModal = ({ open, onClose, email, actionType, onSend }: Resp
     <Dialog open={open} onOpenChange={handleOpen}>
       <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
-            <Sparkles className="h-5 w-5 text-primary" />
+          <DialogTitle className="flex items-center gap-2 text-xl">
+            <Sparkles className="h-5 w-5 text-primary animate-pulse" />
             {actionTitles[actionType]}
           </DialogTitle>
         </DialogHeader>
@@ -98,10 +126,10 @@ export const ResponseModal = ({ open, onClose, email, actionType, onSend }: Resp
           <div className="space-y-2">
             <Label htmlFor="body">Message</Label>
             {isGenerating ? (
-              <div className="flex items-center justify-center h-64 border rounded-md bg-muted">
-                <div className="flex flex-col items-center gap-2">
-                  <Loader2 className="h-8 w-8 animate-spin text-primary" />
-                  <p className="text-sm text-muted-foreground">Generating AI response...</p>
+              <div className="flex items-center justify-center h-64 border rounded-lg bg-muted/30">
+                <div className="flex flex-col items-center gap-3">
+                  <Loader2 className="h-10 w-10 animate-spin text-primary" />
+                  <p className="text-sm text-muted-foreground font-medium">Generating AI response...</p>
                 </div>
               </div>
             ) : (
@@ -111,25 +139,28 @@ export const ResponseModal = ({ open, onClose, email, actionType, onSend }: Resp
                 onChange={(e) => setBody(e.target.value)}
                 placeholder="Email body"
                 rows={12}
-                className="font-mono text-sm"
+                className="text-sm resize-none"
               />
             )}
           </div>
         </div>
 
-        <DialogFooter className="flex gap-2">
+        <DialogFooter className="flex gap-2 sm:gap-3">
           <Button
             variant="outline"
             onClick={handleGenerate}
             disabled={isGenerating}
+            className="gap-2"
           >
-            <Sparkles className="h-4 w-4 mr-2" />
+            <Sparkles className="h-4 w-4" />
             Regenerate
           </Button>
           <Button
             onClick={handleSend}
             disabled={isGenerating || !body.trim()}
+            className="gap-2"
           >
+            <Send className="h-4 w-4" />
             Send Email
           </Button>
         </DialogFooter>

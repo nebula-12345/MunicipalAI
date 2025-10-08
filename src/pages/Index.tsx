@@ -27,11 +27,6 @@ const Index = () => {
 
   const filteredEmails = useMemo(() => {
     return emails.filter((email) => {
-      // Filter by user's department first
-      if (!user || email.department !== user.department) {
-        return false;
-      }
-
       const matchesSearch = 
         email.subject.toLowerCase().includes(searchQuery.toLowerCase()) ||
         email.sender.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -45,7 +40,7 @@ const Index = () => {
 
       return matchesSearch && matchesDepartment && matchesStatus;
     });
-  }, [emails, searchQuery, departmentFilter, statusFilter, user]);
+  }, [emails, searchQuery, departmentFilter, statusFilter]);
 
   const handleSelectEmail = (email: Email) => {
     setSelectedEmail(email);
