@@ -4,6 +4,7 @@ import { cn } from '@/lib/utils';
 import { Search, Filter, AlertCircle, Clock } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface EmailListProps {
   emails: Email[];
@@ -18,9 +19,10 @@ interface EmailListProps {
 const departmentColors: Record<Department, string> = {
   'administration': 'bg-blue-500/10 text-blue-700 dark:text-blue-300',
   'finance': 'bg-green-500/10 text-green-700 dark:text-green-300',
-  'public-works': 'bg-orange-500/10 text-orange-700 dark:text-orange-300',
-  'planning': 'bg-purple-500/10 text-purple-700 dark:text-purple-300',
-  'human-resources': 'bg-pink-500/10 text-pink-700 dark:text-pink-300',
+  'social': 'bg-purple-500/10 text-purple-700 dark:text-purple-300',
+  'audit': 'bg-orange-500/10 text-orange-700 dark:text-orange-300',
+  'culture': 'bg-pink-500/10 text-pink-700 dark:text-pink-300',
+  'infrastructure': 'bg-cyan-500/10 text-cyan-700 dark:text-cyan-300',
 };
 
 const statusColors: Record<EmailStatus, string> = {
@@ -38,16 +40,16 @@ const priorityColors: Record<Priority, string> = {
   'low': 'bg-gray-500/10 text-gray-700 dark:text-gray-300',
 };
 
-const formatDueDate = (dueDate: Date | undefined): string | null => {
+const formatDueDate = (dueDate: Date | undefined, t: (key: string) => string): string | null => {
   if (!dueDate) return null;
   const now = new Date();
   const diff = dueDate.getTime() - now.getTime();
   const days = Math.ceil(diff / (1000 * 60 * 60 * 24));
   
-  if (days < 0) return 'Overdue';
-  if (days === 0) return 'Due today';
-  if (days === 1) return 'Due tomorrow';
-  return `Due in ${days} days`;
+  if (days < 0) return `${t('email.overdue')} ${Math.abs(days)} ${t('email.days')}`;
+  if (days === 0) return t('email.dueToday');
+  if (days === 1) return t('email.dueTomorrow');
+  return `${t('email.dueIn')} ${days} ${t('email.days')}`;
 };
 
 export const EmailList = ({
@@ -59,6 +61,8 @@ export const EmailList = ({
   statusFilter,
   onStatusFilterChange,
 }: EmailListProps) => {
+  const { t } = useLanguage();
+  
   return (
     <div className="flex h-full flex-col border-r bg-card">
       <div className="border-b p-4 space-y-3">
@@ -68,7 +72,7 @@ export const EmailList = ({
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
             type="text"
-            placeholder="Search emails..."
+            placeholder={t('email.search')}
             value={searchQuery}
             onChange={(e) => onSearchChange(e.target.value)}
             className="pl-9"
@@ -80,12 +84,12 @@ export const EmailList = ({
             <SelectValue placeholder="Status" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">All Status</SelectItem>
-            <SelectItem value="pending">Pending</SelectItem>
-            <SelectItem value="responded">Responded</SelectItem>
-            <SelectItem value="forwarded">Forwarded</SelectItem>
-            <SelectItem value="closed">Closed</SelectItem>
-            <SelectItem value="archived">Archived</SelectItem>
+            <SelectItem value="all">{t('email.allStatus')}</SelectItem>
+            <SelectItem value="pending">{t('email.pending')}</SelectItem>
+            <SelectItem value="responded">{t('email.responded')}</SelectItem>
+            <SelectItem value="forwarded">{t('email.forwarded')}</SelectItem>
+            <SelectItem value="closed">{t('email.closed')}</SelectItem>
+            <SelectItem value="archived">{t('email.archived')}</SelectItem>
           </SelectContent>
         </Select>
       </div>
@@ -127,18 +131,18 @@ export const EmailList = ({
             <div className="flex gap-2 flex-wrap">
               <Badge variant="secondary" className={cn('text-xs', priorityColors[email.priority])}>
                 {email.priority === 'urgent' && <AlertCircle className="h-3 w-3 mr-1" />}
-                {email.priority}
+                {t(`email.${email.priority}`)}
               </Badge>
               <Badge variant="secondary" className={cn('text-xs', statusColors[email.status])}>
-                {email.status}
+                {t(`email.${email.status}`)}
               </Badge>
               {email.dueDate && (
                 <Badge variant="outline" className={cn(
                   'text-xs',
-                  formatDueDate(email.dueDate)?.includes('Overdue') && 'border-red-500 text-red-700 dark:text-red-300'
+                  formatDueDate(email.dueDate, t)?.includes(t('email.overdue')) && 'border-red-500 text-red-700 dark:text-red-300'
                 )}>
                   <Clock className="h-3 w-3 mr-1" />
-                  {formatDueDate(email.dueDate)}
+                  {formatDueDate(email.dueDate, t)}
                 </Badge>
               )}
               {email.hasAttachments && (

@@ -8,6 +8,7 @@ import { Email, ActionType } from '@/types/email';
 import { Loader2, Sparkles, Send } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface ResponseModalProps {
   open: boolean;
@@ -32,6 +33,7 @@ export const ResponseModal = ({ open, onClose, email, actionType, onSend }: Resp
   const [subject, setSubject] = useState(`Re: ${email.subject}`);
   const [body, setBody] = useState('');
   const { toast } = useToast();
+  const { t } = useLanguage();
 
   const handleGenerate = async () => {
     setIsGenerating(true);
@@ -98,13 +100,13 @@ export const ResponseModal = ({ open, onClose, email, actionType, onSend }: Resp
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2 text-xl">
             <Sparkles className="h-5 w-5 text-primary animate-pulse" />
-            {actionTitles[actionType]}
+            {t('response.title')}
           </DialogTitle>
         </DialogHeader>
 
         <div className="space-y-4 py-4">
           <div className="space-y-2">
-            <Label htmlFor="recipient">To</Label>
+            <Label htmlFor="recipient">{t('email.to')}</Label>
             <Input
               id="recipient"
               value={recipient}
@@ -129,7 +131,7 @@ export const ResponseModal = ({ open, onClose, email, actionType, onSend }: Resp
               <div className="flex items-center justify-center h-64 border rounded-lg bg-muted/30">
                 <div className="flex flex-col items-center gap-3">
                   <Loader2 className="h-10 w-10 animate-spin text-primary" />
-                  <p className="text-sm text-muted-foreground font-medium">Generating AI response...</p>
+                  <p className="text-sm text-muted-foreground font-medium">{t('response.generating')}</p>
                 </div>
               </div>
             ) : (
@@ -161,7 +163,7 @@ export const ResponseModal = ({ open, onClose, email, actionType, onSend }: Resp
             className="gap-2"
           >
             <Send className="h-4 w-4" />
-            Send Email
+            {t('response.send')}
           </Button>
         </DialogFooter>
       </DialogContent>

@@ -1,5 +1,5 @@
 export type EmailStatus = 'pending' | 'responded' | 'forwarded' | 'closed' | 'archived';
-export type Department = 'administration' | 'finance' | 'public-works' | 'planning' | 'human-resources';
+export type Department = 'administration' | 'finance' | 'social' | 'audit' | 'culture' | 'infrastructure';
 export type Priority = 'urgent' | 'high' | 'normal' | 'low';
 
 export interface Attachment {

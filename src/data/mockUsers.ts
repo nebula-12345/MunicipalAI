@@ -15,21 +15,27 @@ export const mockUsers: User[] = [
   },
   {
     id: '3',
-    name: 'Public Works Director',
-    email: 'publicworks@cityhall.gov',
-    department: 'public-works',
+    name: 'Social Service Director',
+    email: 'social@cityhall.gov',
+    department: 'social',
   },
   {
     id: '4',
-    name: 'Planning Officer',
-    email: 'planning@cityhall.gov',
-    department: 'planning',
+    name: 'Audit Officer',
+    email: 'audit@cityhall.gov',
+    department: 'audit',
   },
   {
     id: '5',
-    name: 'HR Manager',
-    email: 'hr@cityhall.gov',
-    department: 'human-resources',
+    name: 'Culture Manager',
+    email: 'culture@cityhall.gov',
+    department: 'culture',
+  },
+  {
+    id: '6',
+    name: 'Infrastructure Manager',
+    email: 'infrastructure@cityhall.gov',
+    department: 'infrastructure',
   },
 ];
 
