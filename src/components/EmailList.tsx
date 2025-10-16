@@ -11,8 +11,6 @@ interface EmailListProps {
   onSelectEmail: (email: Email) => void;
   searchQuery: string;
   onSearchChange: (query: string) => void;
-  departmentFilter: Department | 'all';
-  onDepartmentFilterChange: (department: Department | 'all') => void;
   statusFilter: EmailStatus | 'all';
   onStatusFilterChange: (status: EmailStatus | 'all') => void;
 }
@@ -58,8 +56,6 @@ export const EmailList = ({
   onSelectEmail,
   searchQuery,
   onSearchChange,
-  departmentFilter,
-  onDepartmentFilterChange,
   statusFilter,
   onStatusFilterChange,
 }: EmailListProps) => {
@@ -79,36 +75,19 @@ export const EmailList = ({
           />
         </div>
 
-        <div className="flex gap-2">
-          <Select value={departmentFilter} onValueChange={onDepartmentFilterChange}>
-            <SelectTrigger className="flex-1">
-              <Filter className="h-4 w-4 mr-2" />
-              <SelectValue placeholder="Department" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Departments</SelectItem>
-              <SelectItem value="administration">Administration</SelectItem>
-              <SelectItem value="finance">Finance</SelectItem>
-              <SelectItem value="public-works">Public Works</SelectItem>
-              <SelectItem value="planning">Planning</SelectItem>
-              <SelectItem value="human-resources">Human Resources</SelectItem>
-            </SelectContent>
-          </Select>
-
-          <Select value={statusFilter} onValueChange={onStatusFilterChange}>
-            <SelectTrigger className="flex-1">
-              <SelectValue placeholder="Status" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Status</SelectItem>
-              <SelectItem value="pending">Pending</SelectItem>
-              <SelectItem value="responded">Responded</SelectItem>
-              <SelectItem value="forwarded">Forwarded</SelectItem>
-              <SelectItem value="closed">Closed</SelectItem>
-              <SelectItem value="archived">Archived</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
+        <Select value={statusFilter} onValueChange={onStatusFilterChange}>
+          <SelectTrigger>
+            <SelectValue placeholder="Status" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All Status</SelectItem>
+            <SelectItem value="pending">Pending</SelectItem>
+            <SelectItem value="responded">Responded</SelectItem>
+            <SelectItem value="forwarded">Forwarded</SelectItem>
+            <SelectItem value="closed">Closed</SelectItem>
+            <SelectItem value="archived">Archived</SelectItem>
+          </SelectContent>
+        </Select>
       </div>
 
       <div className="flex-1 overflow-y-auto">

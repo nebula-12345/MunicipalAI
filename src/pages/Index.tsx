@@ -16,7 +16,6 @@ const Index = () => {
   const [modalOpen, setModalOpen] = useState(false);
   const [currentAction, setCurrentAction] = useState<ActionType>('custom');
   const [searchQuery, setSearchQuery] = useState('');
-  const [departmentFilter, setDepartmentFilter] = useState<Department | 'all'>('all');
   const [statusFilter, setStatusFilter] = useState<EmailStatus | 'all'>('all');
 
   useEffect(() => {
@@ -32,15 +31,12 @@ const Index = () => {
         email.sender.toLowerCase().includes(searchQuery.toLowerCase()) ||
         email.body.toLowerCase().includes(searchQuery.toLowerCase());
 
-      const matchesDepartment = 
-        departmentFilter === 'all' || email.department === departmentFilter;
-
       const matchesStatus = 
         statusFilter === 'all' || email.status === statusFilter;
 
-      return matchesSearch && matchesDepartment && matchesStatus;
+      return matchesSearch && matchesStatus;
     });
-  }, [emails, searchQuery, departmentFilter, statusFilter]);
+  }, [emails, searchQuery, statusFilter]);
 
   const handleSelectEmail = (email: Email) => {
     setSelectedEmail(email);
@@ -93,8 +89,6 @@ const Index = () => {
           onSelectEmail={handleSelectEmail}
           searchQuery={searchQuery}
           onSearchChange={setSearchQuery}
-          departmentFilter={departmentFilter}
-          onDepartmentFilterChange={setDepartmentFilter}
           statusFilter={statusFilter}
           onStatusFilterChange={setStatusFilter}
         />
